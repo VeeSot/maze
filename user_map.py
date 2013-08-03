@@ -133,7 +133,7 @@ def buildin_field(total_elements_in_string, input_value):
 def file_check(all_file):
 # Если файл прочитался-не значит что он корректный.
 # Отлавливаем всякие гадости и бросаем исключения
-    #Наличие постороних цифр
+    # Наличие постороних цифр
     all_numbers_in_files = findall('(-*\d+)', all_file)
     for x in all_numbers_in_files:
         if x != '0':
