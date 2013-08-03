@@ -8,13 +8,18 @@ from time import sleep
 from  BFS import *
 
 
-class InputError(Exception):
+class ManyIO(Exception):
+    """Много точек вход-выхода"""
     pass
 
 
-class ErrorFromUser(Exception):
-    def not_way(self):
-        print "В вашем лабиринте нет проходимых участков"
+class NotCorrectValue(Exception):
+    """Случай когда апользователь вбивает в лабиринт-постороние цифры"""
+    pass
+
+class NotEqalLen(Exception):
+    """Строки разной длины"""
+    pass
 
 
 def read_out_file():
@@ -53,7 +58,7 @@ def read_out_file():
         # Получим координаты старта и финиша.
         S = argwhere(xfield == 2)[0]
         F = argwhere(xfield == 3)[0]
-        # Затрем отметку старта(для лучшей визуализации и...
+        # Затрем отметку старта(для лучшей визуализации) и...
         xfield[S[0]][S[1]] = 0
         # Запустим поиск!
         x = promt('search')
@@ -68,7 +73,20 @@ def read_out_file():
               "или создайте его если такового не имеется" +   '\n'
     except IndexError:
         print "Упс.Кажется Вы ввели некоректные данные " \
-              "или забыли верно указать точку входа и выхода"
+              "или забыли верно указать точку входа и выхода" +   '\n'
+    except NotCorrectValue:
+        print "В карте лабиринта обнаружены неверные входные данные" \
+              "(числа отличные от требований программы)" +   '\n'
+    except ManyIO:
+        print "В вашей карте более одного входа или выхода." \
+              "Исправьте входные данные" +   '\n'
+    except NotEqalLen:
+        print "В вашей карте имеются строки разной длины." \
+              "Исправьте входные данные" +   '\n'
+    except :
+        print "Таки что то пошло не так." \
+              "Перечитайте инструкцию,проверьте входные данные " \
+              "и повторите снова." +  '\n'
 
 
 
@@ -85,12 +103,16 @@ def buildin_field(total_elements_in_string, input_value):
     i = 1
     while i <= len(open('field').readlines()):
         string_content = input_value.readline().rstrip()
-        #Немного движений ушами дабы преобразовать непустую строку в список
+        # Немного движений ушами дабы преобразовать непустую строку в список
         if string_content != '':
             # Заморочка на юзабельность  и внешний вид
             # чтобы модифицировать единички в (-1)стенки
             string_content = sub('1', '-1', string_content)
             string_content = findall('(-*\d+)', string_content)
+            # Число цифр в строке.
+            # Контролируем дабы не было лабиринта со строками разного уровня
+            if len(string_content) != total_elements_in_string:
+                raise NotEqalLen
             # А потом все добавить в список который будет строкой-частью поля
             # И плюсом два элемента стенки по бокам
             del string_field[:]
@@ -111,13 +133,25 @@ def buildin_field(total_elements_in_string, input_value):
 def file_check(all_file):
 # Если файл прочитался-не значит что он корректный.
 # Отлавливаем всякие гадости и бросаем исключения
+    #Наличие постороних цифр
     all_numbers_in_files = findall('(-*\d+)', all_file)
     for x in all_numbers_in_files:
         if x != '0':
             if x != '1':
                 if x != '2':
                     if x != '3':
-                        raise ErrorFromUser.not_way(x)
+                        raise NotCorrectValue
+    # Слишком много входных или выходных координат
+    two = []
+    three = []
+    for x in all_numbers_in_files:
+        if x == '2':
+            two.append(x)
+        elif x == '3':
+            three.append(x)
+    if len(two)>1 or len(three)>1:
+        raise ManyIO
+
 
 
 def convert_type_maze(field, N, M):
