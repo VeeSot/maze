@@ -19,8 +19,6 @@ def DFS(x, y, field, S, F, N, M, Find):
     while c < 4 and not Find:
         if  field[x + i[c], y + j[c]] == 3:
             field[x + i[c], y + j[c]] = -2
-            #Времянка для пути
-            temp_way = [[], []]
             #Прикрутим заголовок и начало пути
             way[0].insert(1, S[0])
             way[1].insert(1, S[1])
