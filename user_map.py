@@ -1,12 +1,12 @@
 # encoding:utf-8
 """Обработка пользовательской карты"""
-from processing_io import show_labirinth, promt
+from processing_io import show_labirinth, promt, show_way,final_check
 from re import findall, sub
 from numpy import int, zeros, argwhere
 from DFS import *
 from time import sleep
 from  BFS import *
-
+way = [['Y'], ['X']]
 
 class ManyIO(Exception):
     """Много точек вход-выхода"""
@@ -63,17 +63,21 @@ def read_out_file():
         # Запустим поиск!
         x = promt('search')
         if x == 2:
-            BFS(field, S, F, True)
+            Bway,Bfield = BFS(field, S, F,way)
+            check = final_check(Bfield, F)
+            if check:
+                show_way(Bway)
+                show_labirinth(N, M, Bfield)
         elif x == 1:
-            DFS(S[0], S[1], xfield, S, F, N, M, False)
-
+            DFS(S[0], S[1], field, S, F, way)
+            check = final_check(field, F)
+            if check:
+                show_way(way)
+                show_labirinth(N, M, field)
     except IOError:
         print "Проблемы с доступом к файлу." \
               "Проверьте наличие файла согласно инструкции " \
               "или создайте его если такового не имеется" +   '\n'
-    except IndexError:
-        print "Упс.Кажется Вы ввели некоректные данные " \
-              "или забыли верно указать точку входа и выхода" +   '\n'
     except NotCorrectValue:
         print "В карте лабиринта обнаружены неверные входные данные" \
               "(числа отличные от требований программы)" +   '\n'
@@ -83,10 +87,11 @@ def read_out_file():
     except NotEqalLen:
         print "В вашей карте имеются строки разной длины." \
               "Исправьте входные данные" +   '\n'
-    except :
-        print "Таки что то пошло не так." \
-              "Перечитайте инструкцию,проверьте входные данные " \
-              "и повторите снова." +  '\n'
+    except:
+        print "Что то пошло не так...Проверьте входные данные и повторите" \
+              " Если проблема повторяется-обратитесь к разраотчику" +   '\n'
+
+
 
 
 

@@ -9,6 +9,10 @@ from BFS import *
 from user_map import read_out_file
 # Поднимем рекурсию дабы разершить уровень 100 на 100 клеточек
 sys.setrecursionlimit(3000)
+# Хранитель пути
+way = [['Y'], ['X']]
+#Cостояние найдености пути
+Find = False
 
 # Простая вилка направленая на то  чтобы пользователь выбрал удобный ему путь.
 # Автоматически генерируемый лабиринт или считаем лабиринт из файла
@@ -56,11 +60,18 @@ if value == 1:
     # другой на поиск в ширину
     x = promt('search')
     if x == 2:
-        BFS(field, S, F)
+        Bway,Bfield = BFS(field, S, F,way)
+        check = final_check(Bfield, F)
+        if check:
+            show_way(Bway)
+            show_labirinth(N, M, Bfield)
     elif x == 1:
-        DFS(S[0], S[1], field, S, F, N, M, False)
-        #Проверим,нашли ли мы вообще путь
-        final_message(field, F)
+        DFS(S[0], S[1], field, S, F, way)
+        check = final_check(field, F)
+        if check:
+            show_way(way)
+            show_labirinth(N, M, field)
+
     raw_input('Для выхода из программы нажмите клавшу "Enter"')
 
 elif value == 2:

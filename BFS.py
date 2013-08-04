@@ -7,9 +7,9 @@ import sys
 # Пару кортежей в качестве хранителей констант
 a = (0, 0, -1, 1)
 b = (-1, 1, 0, 0)
+
 # Хранители пути
-wayX = []
-wayY = []
+way = [[], []]
 
 
 def BFS(field, S, F, U=False):
@@ -63,22 +63,20 @@ def BFS(field, S, F, U=False):
                         c += 1
                 j += 1
             i += 1
-    if xfield[F[0]][F[1]] == 0:
-        # Все печально.Пути в лабиринте нет
-        print "К сожалению не существует пути между указаными вами точками"
+    #Если волна дошла
+    if xfield[F[0]][F[1]] != 0:
+            return_way(F, S, xfield)
+            return  way, xfield
     else:
-        return_way(F, S, xfield, field, x, y)
+        return None, field
 
 
-def return_way(F, S, xfield, field, x, y):
+def return_way(F, S, xfield):
 # Хорошо.Начинаем отрисовку обратного пути.
 # Для этого мы переместимся в точку выхода и поищем рядом с ней наименьшее
 # значение которорое показывает за сколько шагов можно добрать до выхода.
-# Координаты старта обратного поиска и начало пути
-    Y = F[0]
     X = F[1]
-    wayX.append(X)
-    wayY.append(Y)
+    Y = F[0]
     # Пока не превратятся оба в нужные координаты-крутимся
     while not (X == S[1] and Y == S[0]):
         c = 0
@@ -87,31 +85,24 @@ def return_way(F, S, xfield, field, x, y):
             # прыгаем туда и плюс пишем все хранители пути
             if xfield[Y + b[c]][X + a[c]] == xfield[Y][X] - 1:
                 if xfield[Y + b[c]][X + a[c]] != -1:
-                    wayX.append(X + a[c])
-                    wayY.append(Y + b[c])
+                    way[0].append(X + a[c])
+                    way[1].append(Y + b[c])
                     # Пишем новые значения X и Y
                     X = X + a[c]
                     Y = Y + b[c]
             c = c + 1
-            # Перевернем наши списки
-    wayY.reverse()
-    wayX.reverse()
+    #СБорка списка и реверсы для гуаноидного восприятия
+    way[0].reverse()
+    way[1].reverse()
+    way.reverse()
+    way[0].insert(0, 'Y')
+    way[1].insert(0, 'X')
+    # Координаты старта обратного поиска и начало пути
+    way[1].append(F[1])
+    way[0].append(F[0])
 
-    # Возьмем исходный массив field b и отрисуем на нем путь
-    xfield = zeros((y, x), dtype=int)
-    c = 0
-    while c < y:
-        xfield[c] = field[c]
-        c += 1
-    print "Мы сделали " + \
-          str(len(wayX)) + " шагов к нашей цели.Ниже они перечислены подробнее"
+    for element in xrange(len(way[0])):
+        if type(way[0][element]) != str:
+            xfield[way[0][element]][way[1][element]] = -2
 
-    sys.stdout.write("%3s" % 'X' + ' | ' + 'Y')
-    print ' '
-    for element in xrange(len(wayX)):
-        xfield[wayY[element]][wayX[element]] = -2
-        sys.stdout.write("%3s" % str(wayX[element]) + ' | '
-                         + str(wayY[element]))
-        print ' '
 
-    show_labirinth(y, x, xfield)
