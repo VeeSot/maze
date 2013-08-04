@@ -63,10 +63,10 @@ def BFS(field, S, F, U=False):
                         c += 1
                 j += 1
             i += 1
-    #Если волна дошла
+        #Если волна дошла
     if xfield[F[0]][F[1]] != 0:
-            return_way(F, S, xfield)
-            return  way, xfield
+        return_way(F, S, xfield)
+        return  way, xfield
     else:
         return None, field
 
@@ -74,7 +74,7 @@ def BFS(field, S, F, U=False):
 def return_way(F, S, xfield):
 # Хорошо.Начинаем отрисовку обратного пути.
 # Для этого мы переместимся в точку выхода и поищем рядом с ней наименьшее
-# значение которорое показывает за сколько шагов можно добрать до выхода.
+# значение которорое показывает за сколько шагов можно добраться до выхода.
     X = F[1]
     Y = F[0]
     # Пока не превратятся оба в нужные координаты-крутимся
@@ -91,7 +91,7 @@ def return_way(F, S, xfield):
                     X = X + a[c]
                     Y = Y + b[c]
             c = c + 1
-    #СБорка списка и реверсы для гуаноидного восприятия
+        #Сборка списка и реверсы для гуаноидного восприятия
     way[0].reverse()
     way[1].reverse()
     way.reverse()
@@ -101,8 +101,18 @@ def return_way(F, S, xfield):
     way[1].append(F[1])
     way[0].append(F[0])
 
+    #Отметим тяжкий путь
     for element in xrange(len(way[0])):
         if type(way[0][element]) != str:
             xfield[way[0][element]][way[1][element]] = -2
+        #Затрем все стороние числа которые не лежат на нашем пути.Нефиг вносить смуту
+    y = 0
+    while y<len(xfield):
+        x = 0
+        while x < len(xfield[0]):
+            if xfield[y][x] != -2 and xfield[y][x] != -1:
+                xfield[y][x] = 0
+            x = x + 1
+        y = y + 1
 
 

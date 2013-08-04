@@ -71,21 +71,21 @@ def promt(x):
 def promt_point_way(field, N, M, point):
     """Запрос точек начала и конца пути для лабиринта при режиме автоматической генерации вышеупомянутого"""
     retry = 'Пожалуйста,будьте внимательнее и попробуйте снова.'  +  '\n' \
-            'Введеные данные должны быть разделены запятой ' \
-            'и являться положительными целыми числами'+'\n' \
-            "Абцисса(горизонтальная координата) точки " \
-            "должна быть не более чем " + str(M-2) + " и не менее 0"+'\n' \
-            "Ордината(вертикальная координата) точки должна быть " \
-            "не более чем " + str(N-2) + " и не менее 0" +'\n'
+                                                                     'Введеные данные должны быть разделены запятой ' \
+                                                                     'и являться положительными целыми числами'+'\n' \
+                                                                                                                "Абцисса(горизонтальная координата) точки " \
+                                                                                                                "должна быть не более чем " + str(M-2) + " и не менее 0"+'\n' \
+                                                                                                                                                                         "Ордината(вертикальная координата) точки должна быть " \
+                                                                                                                                                                         "не более чем " + str(N-2) + " и не менее 0" +'\n'
     while True:
         try:
             y,x = input("Введите через запятую координаты "
                         ""+point+" пути   " +'\n')
             if x<0 or y<0:
-                print"Координаты не могут быть отрицательным числом \n "  \
+                print"Координаты не могут быть отрицательным числом \n " \
                      + retry
             elif x == 0 or y == 0 or x == M or y == N:
-                print "Упс.Введены координаты указывающие на стену \n "  \
+                print "Упс.Введены координаты указывающие на стену \n " \
                       + retry
             elif x >= 1 and y >= 1  and field[x, y] != -1:
                 P=[x, y]
@@ -138,31 +138,22 @@ def show_labirinth(N, M, field):
     # Выведем строку для координат
     i = 0
     for element in xrange(M):
-        sys.stdout.write("%2s" % number_for_wall(element) )
+        sys.stdout.write("%1s" % str(element)[-1] )
     print ' '
     y = 0
     while y < N:
         x = 0
 
         while x < M:
-            sys.stdout.write("%2s" % str(transform_out(x,y,field)))
+            sys.stdout.write("%1s" % str(transform_out(x,y,field))[-1])
             x = x + 1
-        sys.stdout.write(number_for_wall(i))
+        sys.stdout.write(str(i)[-1])
         i = i + 1
         print ' '
         y = y + 1
     for element in xrange(M):
-        sys.stdout.write("%2s" % number_for_wall(element) )
+        sys.stdout.write("%1s" % str(element)[-1] )
     print ' '
-
-def number_for_wall(number):
-    """Если число которым мы хотим отрисовать номера стенок-
-       не делится на десятку(не содержит в себе  только десятки)
-       -вернем только хвост числа
-       Таким образом боремся со смещением лабринта"""
-    if number % 10 != 0:
-        return str(number)[-1]
-    else: return str(number)
 
 def transform_out(y, x, field):
     """Трансформация в удобоваримый для пользвателя вид.
@@ -171,8 +162,14 @@ def transform_out(y, x, field):
         return '#'
     elif field[x][y] == -2:
         return '+'
+    elif field[x][y] == 0:
+        return ' '
+    elif field[x][y] == 2:
+        return 'S'
+    elif field[x][y] == 3:
+        return 'F'
     else:
-        return str(' ')
+        return str(field[x][y])
 
 def wall_horizont(field, row):
     """Добавим горизонатльные стенки для лабиринта"""

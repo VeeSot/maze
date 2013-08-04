@@ -33,8 +33,7 @@ def read_out_file():
                   "в которой могут и долны встречаться числа O, 1, 2, 3"+'\n'
                   "4.Начало пути отмечается цифрой 2. Окончание-цифрой 3. "
                   "Проходимые участки-цифрой 0. Непроходимые -цифрой 1" +'\n'
-                  "5.Пример карты лежит в папке с программой и назван 'example_field'" +'\n'
-                  "6.Если вы все выполнили и поняли-нажмите 'Enter' и добро пожаловать в лабиринт =]")
+                  "5.Пример карты лежит в папке с программой и назван 'example_field'" +'\n'                                                                                                                                                                                                                                                                                                                                                                                                                                                      "6.Если вы все выполнили и поняли-нажмите 'Enter' и добро пожаловать в лабиринт =]")
         # Читам что нам там подарил юзер
         all_file = str(open('field').readlines())
         file_check(all_file)
@@ -118,12 +117,12 @@ def buildin_field(total_elements_in_string, input_value):
             # Контролируем дабы не было лабиринта со строками разного уровня
             if len(string_content) != total_elements_in_string:
                 raise NotEqalLen
-            # А потом все добавить в список который будет строкой-частью поля
+                # А потом все добавить в список который будет строкой-частью поля
             # И плюсом два элемента стенки по бокам
             del string_field[:]
             string_field.append(-1)
             for x in string_content:
-                  string_field.append(int(x))
+                string_field.append(int(x))
             string_field.append(-1)
             field.append(string_field[:])
             i += 1
@@ -146,7 +145,7 @@ def file_check(all_file):
                 if x != '2':
                     if x != '3':
                         raise NotCorrectValue
-    # Слишком много входных или выходных координат
+        # Слишком много входных или выходных координат
     two = []
     three = []
     for x in all_numbers_in_files:
