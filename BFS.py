@@ -46,7 +46,7 @@ def BFS(field, S, F, U=False):
     # Количество проходок по всему лабиринту
 
     # Много вайло-итераций!!!!!
-    while iteration < max_iteration:
+    while iteration < max_iteration and xfield[F[0]][F[1]] == 0:
         # На первой проходке мы найдем наш старт
         # (1 которая равна числу иттераций и начнем плясать от нее)
         iteration = iteration + 1
