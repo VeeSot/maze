@@ -1,19 +1,15 @@
 #encoding:utf-8
-"""Главная часть программы-поисковика.
-   Пусть комментарии не смущают и не настораживают читающего сей текст))).
-   Можете упрекнуть меня в незнании конвенции питонячьего кода)))"""
+"""Главная часть программы-поисковика пути.
+   Пусть комментарии не смущают и не настораживают читающего сей текст"""
 from numpy import int, zeros
 from processing_io import *
 from DFS import *
 from BFS import *
 from user_map import read_out_file
 # Поднимем рекурсию дабы разершить уровень 100 на 100 клеточек
-sys.setrecursionlimit(3000)
+sys.setrecursionlimit(5000)
 # Хранитель пути
 way = [['Y'], ['X']]
-#Cостояние найдености пути
-Find = False
-
 # Простая вилка направленая на то  чтобы пользователь выбрал удобный ему путь.
 # Автоматически генерируемый лабиринт или считаем лабиринт из файла
 value = promt('method_input')
@@ -60,7 +56,7 @@ if value == 1:
     # другой на поиск в ширину
     x = promt('search')
     if x == 2:
-        Bway,Bfield = BFS(field, S, F,way)
+        Bway, Bfield = BFS(field, S, F)
         check = final_check(Bfield, F)
         if check:
             show_way(Bway)
@@ -71,9 +67,6 @@ if value == 1:
         if check:
             show_way(way)
             show_labirinth(N, M, field)
-
-    raw_input('Для выхода из программы нажмите клавшу "Enter"')
-
 elif value == 2:
     read_out_file()
-    raw_input('Для выхода из программы нажмите клавшу "Enter"')
+raw_input('Для выхода из программы нажмите клавшу "Enter"')
