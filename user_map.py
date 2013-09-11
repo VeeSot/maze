@@ -3,18 +3,21 @@
 from processing_io import show_labirinth, promt, show_way,final_check
 from re import findall, sub
 from numpy import int, zeros, argwhere
-from DFS import *
+from DFS import DFS
 from time import sleep
-from  BFS import *
-way = [['Y'], ['X']]
+from BFS import BFS
+from config import way
 
 class ManyIO(Exception):
     """Много точек вход-выхода"""
     pass
 
+class IncorrectSize(Exception):
+    """Случай когда пользователь решит отдать нам слишком большой лабиринт"""
+    pass
 
 class NotCorrectValue(Exception):
-    """Случай когда пользователь вбивает в лабиринт-постороние цифры"""
+    """Случай когда пользователь использует в лабиринте постороние цифры"""
     pass
 
 class NotEqalLen(Exception):
@@ -22,14 +25,14 @@ class NotEqalLen(Exception):
     pass
 
 
-def read_out_file():
+def read_out_file(height, width):
     # Попытка получить файл на диске
     try:
         raw_input('''Уважаемый пользователь.ниже написана небольшая инструкция
 После ее прочтения и выполнения - нажмите клавишу "Enter"
 1.Карта должна лежать в одной папке с исполняемой программой(скриптом)
-2.Карта должна иметь имя "field".Без кавычек
-3.Карта должна представлять из себя матрицу чисел,в которой могут и долны встречаться числа O, 1, 2, 3
+2.Файл с картой должен иметь имя "field".Без кавычек
+3.Файл с картой должен представлять из себя матрицу чисел,в которой могут и долны встречаться числа O, 1, 2, 3
 4.Начало пути отмечается цифрой "2". Окончание - цифрой "3".Проходимые участки - цифрой "0". Непроходимые - цифрой "1"
 5.Пример карты лежит в папке с программой и назван "example_field"
 6.Если вы все поняли и выполнили - нажмите 'Enter' и добро пожаловать в лабиринт''')
@@ -42,16 +45,21 @@ def read_out_file():
         total_elements_in_string = len(findall('(\d+)', first_string))
         M = total_elements_in_string + 2
         # Количество строк в файле
-        N = len(open('field').readlines()) + 2
+        numebr_string_in_file = len(open('field').readlines())
+        N = numebr_string_in_file + 2
+        #Проверка габаритов лабиринта
+        if total_elements_in_string > width or numebr_string_in_file > height:
+            raise IncorrectSize
         # Переоткроем файл и начнем читать с первой строки
         input_value = open('field')
-        field = buildin_field(total_elements_in_string, input_value)
+        field = building_field(total_elements_in_string, input_value)
         # Но это полдела.Надо конвертнуть
         xfield = convert_type_maze(field, N, M)
-        # Покажем юзеру наше творение
+        # Покажем лабиринт
         show_labirinth(N, M, xfield)
 
         print "Наш лабиринт!"
+        #Пауза чтоб успел рассмотреть
         sleep(2)
         # Получим координаты старта и финиша.
         S = argwhere(xfield == 2)[0]
@@ -67,6 +75,11 @@ def read_out_file():
                 show_way(Bway)
                 show_labirinth(N, M, Bfield)
         elif x == 1:
+            # Установка рекурсии именно на этом шаге,
+            # т.к не факт что пользователь выберет этот путь
+            # и не стоит делать лишний импорт раньше времени
+            from sys import setrecursionlimit
+            setrecursionlimit(height*width)
             DFS(S[0], S[1], field, S, F, way)
             check = final_check(field, F)
             if check:
@@ -82,22 +95,24 @@ def read_out_file():
     except ManyIO:
         print "В вашей карте более одного входа или выхода." \
               "Исправьте входные данные" +   '\n'
-    except NotEqalLen():
-        print "В вашей карте имеются строки разной длины." \
+    except NotEqalLen:
+        print "В вашей карте имеются строки разной длины." +   '\n'\
               "Исправьте входные данные" +   '\n'
     except IndexError:
         print "Упс!!Что то пошло не так," \
               "возможно вы не указали точку начала или окончания пути"
+    except IncorrectSize:
+        print "Похоже размеры лабиринта-выше допустимых ("+str(width)+" столбцов на " +str(height)+ " строчек) " +'\n' \
+                  "Исправьте входные данные"
     except:
-        print "Что то пошло не так...Проверьте входные данные и повторите" \
-              " Если проблема повторяется-обратитесь к разработчику" +   '\n'
+        print "Что то пошло не так...Проверьте входные данные и повторите." \
+              " Если проблема не исчезает-обратитесь к разработчику программы" +   '\n'
+    finally:
+        #Закрываем открытые ранее файлы
+        input_value.close()
+        print "Спасибо за работу с программой"
 
-
-
-
-
-
-def buildin_field(total_elements_in_string, input_value):
+def building_field(total_elements_in_string, input_value):
     """Займемся сборкой игрового поля из того что нам подарил юзер"""
     # Новый список туда будем складывать все строки
     field = []
