@@ -1,30 +1,48 @@
 # encoding:utf-8
 """Обработка пользовательской карты"""
-from processing_io import show_labirinth, promt, show_way,final_check
-from re import findall, sub
-from numpy import int, zeros, argwhere
-from DFS import DFS
-from time import sleep
-from BFS import BFS
-from config import way
+from processing_io import show_labirinth
+from re import findall
+from config import way, height, width
 
-class ManyIO(Exception):
-    """Много точек вход-выхода"""
-    pass
+#Блок исключений
+class UserExceptions(Exception):
+    """Класс для обработки человеческих ошибок"""
 
-class IncorrectSize(Exception):
-    """Случай когда пользователь решит отдать нам слишком большой лабиринт"""
-    pass
+    def __init__(self):
+        self.data = None
 
-class NotCorrectValue(Exception):
-    """Случай когда пользователь использует в лабиринте постороние цифры"""
-    pass
+    def set_value(self, value):  # Получение входных параметров
+        self.data = value
 
-class NotEqalLen(Exception):
-    """Строки разной длины"""
-    pass
+    def many_io(self):  # Блок избыточных точек входа или выход
+        point = 'выход'
+        if self.data[0] == '2':
+            point = 'вход'
+        print "В вашей карте более одного " + point + "а.Исправьте входные данные" + '\n'
+        raise Exception
 
+    def incorrect_size(self):  # Блок неверных размеров лабиринта
+        size = str(width)
+        if self.data == 'высоту':
+            size = str(height)
+        print "Размеры лабиринта" + " в " + self.data + "больше допустимых " + size + " клеточек" + '\n'
+        raise Exception
 
+    def not_correct_value(self):   # Случай когда пользователь использует в лабиринте постороние цифры
+        print "В карте лабиринта обнаружено число " + self.data + "которое не удволетворяет требованиям программы" + '\n'
+        raise Exception
+
+    def not_equal_len(self):  # Строки разной длины
+        print "В вашей карте имеются строки разной длины.(строка # " + str(self.data) + ")" + '\n'
+        raise Exception
+
+def create_exception(data):
+    exception = UserExceptions()
+    exception.set_value(data)
+    print  # Вставка для того чтобы отделить визуально причину внештатной ситуации
+    return exception
+
+# Чтение и сборка
 def read_out_file(height, width):
     # Попытка получить файл на диске
     try:
@@ -32,90 +50,67 @@ def read_out_file(height, width):
 После ее прочтения и выполнения - нажмите клавишу "Enter"
 1.Карта должна лежать в одной папке с исполняемой программой(скриптом)
 2.Файл с картой должен иметь имя "field".Без кавычек
-3.Файл с картой должен представлять из себя матрицу чисел,в которой могут и долны встречаться числа O, 1, 2, 3
+3.Файл с картой должен представлять из себя матрицу чисел,в которой могут и долны встречаться числа 0, 1, 2, 3
 4.Начало пути отмечается цифрой "2". Окончание - цифрой "3".Проходимые участки - цифрой "0". Непроходимые - цифрой "1"
 5.Пример карты лежит в папке с программой и назван "example_field"
 6.Если вы все поняли и выполнили - нажмите 'Enter' и добро пожаловать в лабиринт''')
-        # Читам что нам там подарил юзер
-        all_file = str(open('field').readlines())
+        all_file = str(open('field').readlines())  # Читам что нам там подарил пользователь
+        first_string = all_file[:all_file.find('\\n')]  # Первая строка до переноса каретки
+        total_elements_in_string = len(findall('(\d+)', first_string))  # Получим первую строку и потом из нее узнаем сколько в ней чисел
+        number_string_in_file = len(open('field').readlines())  # Количество строк в файле
         file_check(all_file)
-        # Получим первую строку и потом из нее узнаем сколько в ней чисел
-        input_value = open('field')
-        first_string = input_value.readline().rstrip()
-        total_elements_in_string = len(findall('(\d+)', first_string))
+        size_maze(total_elements_in_string, number_string_in_file)  # Проверка размеров лабиринта
         M = total_elements_in_string + 2
-        # Количество строк в файле
-        numebr_string_in_file = len(open('field').readlines())
-        N = numebr_string_in_file + 2
-        #Проверка габаритов лабиринта
-        if total_elements_in_string > width or numebr_string_in_file > height:
-            raise IncorrectSize
-        # Переоткроем файл и начнем читать с первой строки
-        input_value = open('field')
-        field = building_field(total_elements_in_string, input_value)
-        # Но это полдела.Надо конвертнуть
-        xfield = convert_type_maze(field, N, M)
-        # Покажем лабиринт
-        show_labirinth(N, M, xfield)
-
+        N = number_string_in_file + 2
+        field = building_field(total_elements_in_string, open('field'))  # Постройка лабиринта из файла с картой
+        xfield = convert_type_maze(field, N, M)  # Но это полдела.Надо конвертнуть
+        show_labirinth(N, M, xfield)  # Покажем лабиринт
         print "Наш лабиринт!"
-        #Пауза чтоб успел рассмотреть
-        sleep(2)
-        # Получим координаты старта и финиша.
-        S = argwhere(xfield == 2)[0]
-        F = argwhere(xfield == 3)[0]
-        # Затрем отметку старта(для лучшей визуализации) и...
-        xfield[S[0]][S[1]] = 0
-        # Запустим поиск!
+        from time import sleep
+        sleep(2)  # Пауза чтоб рассмотреть
+        from numpy import argwhere
+        S = argwhere(xfield == 2)[0]  # Получим координаты старта
+        F = argwhere(xfield == 3)[0]  # и финиша.
+        xfield[S[0]][S[1]] = 0  # Затрем отметку старта(для лучшей визуализации)
+        from processing_io import promt, final_check,show_way
         x = promt('search')
-        if x == 2:
+        if x == 2:  # Вилка на выбор варианта алгоритмы
+            from BFS import BFS
             Bway,Bfield = BFS(field, S, F)
             check = final_check(Bfield, F)
             if check:
                 show_way(Bway)
                 show_labirinth(N, M, Bfield)
         elif x == 1:
-            # Установка рекурсии именно на этом шаге,
-            # т.к не факт что пользователь выберет этот путь
-            # и не стоит делать лишний импорт раньше времени
-            from sys import setrecursionlimit
-            setrecursionlimit(height*width)
+            from DFS import DFS # Подгружаем алгоритм
+            from sys import setrecursionlimit  # Установка рекурсии именно на этом шаге,
+            setrecursionlimit(height*width)  # т.к не факт что пользователь выберет этот путь
             DFS(S[0], S[1], field, S, F, way)
             check = final_check(field, F)
             if check:
                 show_way(way)
                 show_labirinth(N, M, field)
     except IOError:
-        print "Проблемы с доступом к файлу." \
-              "Проверьте наличие файла согласно инструкции " \
-              "или создайте его если такового не имеется" +   '\n'
-    except NotCorrectValue:
-        print "В карте лабиринта обнаружены неверные входные данные" \
-              "(числа отличные от требований программы)" +   '\n'
-    except ManyIO:
-        print "В вашей карте более одного входа или выхода." \
-              "Исправьте входные данные" +   '\n'
-    except NotEqalLen:
-        print "В вашей карте имеются строки разной длины." +   '\n'\
-              "Исправьте входные данные" +   '\n'
+        print "Проблемы с доступом к файлу.Проверьте наличие файла согласно инструкции или создайте его если такового не имеется" +   '\n'
     except IndexError:
-        print "Упс!!Что то пошло не так," \
-              "возможно вы не указали точку начала или окончания пути"
-    except IncorrectSize:
-        print "Похоже размеры лабиринта-выше допустимых ("+str(width)+" столбцов на " +str(height)+ " строчек) " +'\n' \
-                  "Исправьте входные данные"
-    except:
-        print "Что то пошло не так...Проверьте входные данные и повторите." \
-              " Если проблема не исчезает-обратитесь к разработчику программы" +   '\n'
-    finally:
-        #Закрываем открытые ранее файлы
-        input_value.close()
-        print "Спасибо за работу с программой"
+        print "возможно вы не указали точку начала или окончания пути"
+
+
+def convert_type_maze(field, N, M):
+    """Получим лабиринт из вложеных списков.
+       Превратим его в лабиринт-массив из NumPy"""
+    from numpy import zeros
+    second_field = zeros((N, M), dtype=int)
+    y = 0
+    while y < N:
+        second_field[y] = field[y]
+        y += 1
+    return second_field
 
 def building_field(total_elements_in_string, input_value):
-    """Займемся сборкой игрового поля из того что нам подарил юзер"""
-    # Новый список туда будем складывать все строки
-    field = []
+    """Займемся сборкой игрового поля из того что нам подарил пользователь"""
+    from re import sub
+    field = []# Новый список туда будем складывать все строки
     string_field = []
     # И сразу же построим верхнюю стенку
     for x in xrange(total_elements_in_string + 2):
@@ -123,17 +118,13 @@ def building_field(total_elements_in_string, input_value):
     field.append(string_field)
     i = 1
     while i <= len(open('field').readlines()):
-        string_content = input_value.readline().rstrip()
-        # Немного движений ушами дабы преобразовать непустую строку в список
-        if string_content != '':
-            # Заморочка на юзабельность  и внешний вид
-            # чтобы модифицировать единички в (-1)стенки
-            string_content = sub('1', '-1', string_content)
-            string_content = findall('(-*\d+)', string_content)
-            # Число цифр в строке.
-            # Контролируем дабы не было лабиринта со строками разного уровня
-            if len(string_content) != total_elements_in_string:
-                raise NotEqalLen
+        string_content = input_value.readline().strip()
+        if string_content != '':# Немного движений  дабы преобразовать непустую строку в список
+            string_content = sub('1', '-1', string_content)# чтобы модифицировать единички в (-1)стенки
+            string_content = findall('(-*\d+)', string_content)# Число цифр в строке.
+            if len(string_content) != total_elements_in_string:# Контролируем дабы не было лабиринта со строками разного уровня
+                exception = create_exception(i)
+                exception.not_equal_len()
                 # А потом все добавить в список который будет строкой-частью поля
             # И плюсом два элемента стенки по бокам
             del string_field[:]
@@ -143,26 +134,21 @@ def building_field(total_elements_in_string, input_value):
             string_field.append(-1)
             field.append(string_field[:])
             i += 1
-            # Как только выйдем из вайла-добавим нижнюю стенку.
+            # Как только выйдем из цикла-добавим нижнюю стенку.
     del string_field[:]
     for x in xrange(total_elements_in_string + 2):
         string_field.append(-1)
     field.append(string_field)
-    return  field
+    return field
 
-
+# Проверки
 def file_check(all_file):
-# Если файл прочитался-не значит что он корректный.
-# Отлавливаем всякие гадости и бросаем исключения
-    # Наличие постороних цифр
+    # проверка наличия постороних цифр
     all_numbers_in_files = findall('(-*\d+)', all_file)
     for x in all_numbers_in_files:
-        if x != '0':
-            if x != '1':
-                if x != '2':
-                    if x != '3':
-                        raise NotCorrectValue
-        # Слишком много входных или выходных координат
+        if x != '0' and x != '1' and x != '2' and x != '3':
+            exception = create_exception(x)
+            exception.not_correct_value()
     two = []
     three = []
     for x in all_numbers_in_files:
@@ -170,17 +156,17 @@ def file_check(all_file):
             two.append(x)
         elif x == '3':
             three.append(x)
-    if len(two)>1 or len(three)>1:
-        raise ManyIO
+    if len(two) > 1:
+        exception = create_exception(two)
+        exception.many_io()
+    elif len(three) > 1:
+        exception = create_exception(three)
+        exception.many_io()
 
-
-
-def convert_type_maze(field, N, M):
-    """Получим лабиринт из вложеных списков.
-       Превратим его в лабиринт-массив из NumPy"""
-    xfield = zeros((N, M), dtype=int)
-    y = 0
-    while y < N:
-        xfield[y] = field[y]
-        y += 1
-    return xfield
+def size_maze(total_elements_in_string, number_string_in_file):
+    if total_elements_in_string > width:
+            exception = create_exception('ширину')
+            exception.incorrect_size()
+    elif number_string_in_file > height:
+            exception = create_exception('высоту')
+            exception.incorrect_size()

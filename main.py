@@ -1,6 +1,5 @@
 #encoding:utf-8
-"""Главная часть программы-поисковика пути.
-   Пусть комментарии не смущают и не настораживают читающего сей текст"""
+"""Главная часть программы-поисковика пути."""
 from numpy import int, zeros
 from processing_io import wall_vertical, wall_horizontal, block_set, final_check,\
     hello_amigo, promt, promt_point_way, show_labirinth, show_way
@@ -13,54 +12,38 @@ from config import width, height, way
 value = promt('method_input')
 if value == 1:
     # Блок входных данных их обработки
-    # Поприветствуем юзера
-    # и попросим его задать размерность нашего будущего лабиринта.
-    x, y = hello_amigo(height, width)
+    x, y = hello_amigo(height, width)    # Поприветствуем пользователя и попросим его задать размерность нашего будущего лабиринта
     # Мы запрашиваем у пользователя данные для одного лабиринта,
-    # а строим чуток другой на 2 клеточки больше в ширину и в высоту,
-    # потом мы эти излишки сыграют роль стен лабиринта
-    M = x + 2
-    N = y + 2
-    # Игровое поле
-    field = zeros((N, M), dtype=int)
-    # Cтенки
-    # Верхняя+Нижняя
-    wall_horizontal(field, 0)
+    M = x + 2   # строим чуток другой на 2 клеточки больше в ширину и в высоту,
+    N = y + 2   # потом мы эти излишки сыграют роль стен лабиринта
+    field = zeros((N, M), dtype=int)   # Игровое поле
+    #  Cтенки
+    wall_horizontal(field, 0)   # Верхняя+Нижняя
     wall_horizontal(field, N - 1)
-    # Левая+Правая
-    wall_vertical(field, 0, N)
+    wall_vertical(field, 0, N)   # Левая+Правая
     wall_vertical(field, M - 1, N)
-    # Разбрасываем блоки в рандоме
-    block_set(field, N, M)
-    # Показываем пользователю лабиринт
-    show_labirinth(N, M, field)
+    block_set(field, N, M)  # Разбрасываем блоки в рандоме
+    show_labirinth(N, M, field)  # Показываем пользователю лабиринт
     while True:
-        # Попросим ввести координаты начала пути в лабиринте
-        # и подвергнем ряду проверок
-        S = promt_point_way(field, N, M, 'начала')
-        # Координаты конца
-        F = promt_point_way(field, N, M, 'окончания')
+        S = promt_point_way(field, N, M, 'начала')  # Попросим ввести координаты начала пути в лабиринте
+        F = promt_point_way(field, N, M, 'окончания')   # Координаты конца
         if S != F:
             field[F[0]][F[1]] = 3
             print 'Спасибо.Данные приняты.'
             break
         else:
-            print 'Точка начала и окончания в лабиринте-совпадают.' \
-                  'Введите корректные данные'
-    # Вариант из двух случаев.
-    # Один ответ направит на рекурсивный алгоритм поиска в глубину,
-    # другой на поиск в ширину
-    x = promt('search')
+            print 'Точка начала и окончания в лабиринте-совпадают.Введите корректные данные'
+    x = promt('search')  # Вариант из двух алгоритмов поиска
     if x == 2:
-        Bway, Bfield = BFS(field, S, F)
-        check = final_check(Bfield, F)
+        B_way, B_field = BFS(field, S, F)  # на поиск в ширину
+        check = final_check(B_field, F)
         if check:
-            show_way(Bway)
-            show_labirinth(N, M, Bfield)
+            show_way(B_way)
+            show_labirinth(N, M, B_field)
     elif x == 1:
         from sys import setrecursionlimit
-        setrecursionlimit(height*width)
-        DFS(S[0], S[1], field, S, F, way)
+        setrecursionlimit(height * width)
+        DFS(S[0], S[1], field, S, F, way)  # на рекурсивный алгоритм поиска в глубину,
         check = final_check(field, F)
         if check:
             show_way(way)

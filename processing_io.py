@@ -3,7 +3,7 @@
 from sys import stdout
 from random import randint
 
-
+#Приветствие и прием данных
 def hello_amigo(height, width):
     """Приветствуем пользователя"""
     while True:
@@ -14,21 +14,17 @@ def hello_amigo(height, width):
             elif type(x) == float or type(y) == float:
                 print "Размеры не могут быть указаны нецелым числом '\n "
             elif x > width or y > height:
-                print "Нерекомендуется использовать такие большие размеры " \
-                      "из за внутрених ограничений программы \n "
+                print "Нерекомендуется использовать такие большие размеры из за внутрених ограничений программы \n "
             elif type(x) == str or type(y) == str:
                 print "Размеры не могут быть указаны текстом \n "
             elif x > 0 and y > 0 and type(x) == int and type(y) == int:
                 return x, y
         except TypeError:
-            print "Упс.Кажется Вы ввели некоректные данные" \
-                  "(например нецелое число)" + '\n'
+            print "Упс.Кажется Вы ввели некоректные данные(например нецелое число)" + '\n'
         except NameError:
-            print "Упс.Кажется Вы ввели некоректные данные" \
-                  "(например какую нибудь строку или набор букв)" + '\n'
+            print "Упс.Кажется Вы ввели некоректные данные(например какую нибудь строку или набор букв)" + '\n'
         except:
             print "Упс.Кажется Вы ввели некоректные данные." + '\n'
-
 
 def promt(x):
     """Обработка либо методов работы алгоритмов,либо решения о типе лабиринта"""
@@ -54,25 +50,19 @@ def promt(x):
             elif value < 1 and type(value) == str:
                 print "Введеные данные-неверны.Они не могут быть менее 1 \n "
             elif type(value) == float:
-                print "Надо вводить целочисленые значения" \
-                      " а не дробные(2.0 и 1.0-не принимаются) \n "
+                print "Надо вводить целочисленые значения а не дробные(2.0 и 1.0-не принимаются) \n "
             elif type(value) == type(str):
                 print "Нужно ввести цифры а не текст \n "
             elif (value == 1 or value == 2) and len(str(value)) == 1:
                 return value
             else:
-                print "Неверные входные данные." \
-                      "Пожалуйста,введите правильные значения"
+                print "Неверные входные данные.Пожалуйста,введите правильные значения"
         except SyntaxError:
-            print "Обнаружены проблемы с входными данными. " \
-                  "Пожалуйста,повторно проверьте все входные данные"
+            print "Обнаружены проблемы с входными данными.Пожалуйста,повторно проверьте все входные данные"
         except TypeError:
-            print "Упс.Кажется Вы ввели некоректные данные" \
-                  "(например нецелое число)" + '\n'
+            print "Упс.Кажется Вы ввели некоректные данные(например нецелое число)" + '\n'
         except NameError:
-            print "Упс.Кажется Вы ввели некоректные данные" \
-                  "(например какую нибудь строку или набор букв)" + '\n'
-
+            print "Упс.Кажется Вы ввели некоректные данные(например какую нибудь строку или набор букв)" + '\n'
 
 def promt_point_way(field, N, M, point):
     """Запрос точек начала и конца пути для лабиринта
@@ -86,84 +76,43 @@ def promt_point_way(field, N, M, point):
             + str(N - 2) + " и не менее 0" + '\n'
     while True:
         try:
-            y, x = input("Введите через запятую координаты "
-                         "" + point + " пути   " + '\n')
+            y, x = input("Введите через запятую координаты " + point + " пути" + '\n')
             if x < 0 or y < 0:
-                print"Координаты не могут быть отрицательным числом \n " \
-                     + retry
+                print"Координаты не могут быть отрицательным числом \n " + retry
             elif x == 0 or y == 0 or x == M or y == N:
-                print "Упс.Введены координаты указывающие на стену \n " \
-                      + retry
+                print "Упс.Введены координаты указывающие на стену \n " + retry
             elif x >= 1 and y >= 1 and field[x, y] != -1:
                 P = [x, y]
                 return P
             elif field[x, y] == -1:
-                print "Упс.На указанных вами координатах находится" \
-                      " непроходимый участок(блок) '\n'" + retry
+                print "Упс.На указанных вами координатах находится непроходимый участок(блок) '\n'" + retry
             elif type(x) == float or type(y) == float:
                 print "Координаты не могут быть указаны нецелым числом '\n "
             elif type(x) == str or type(y) == str:
                 print "Координаты  не могут быть указаны текстом \n "
-
-        # Обработка эксепшенами от всякой ереси
         except TypeError:
-            print "Упс.Кажется Вы ввели некоректные данные" \
-                  "(например нецелое число)" + '\n' + retry
+            print "Упс.Кажется Вы ввели некоректные данные(например нецелое число)" + '\n' + retry
         except NameError:
-            print "Упс.Кажется Вы ввели некоректные данные" \
-                  "(например какую нибудь строку или набор букв)" + '\n' + retry
+            print "Упс.Кажется Вы ввели некоректные данные(например какую нибудь строку или набор букв)" + '\n' + retry
         except IndexError:
             print "Ууу...слишком далеко за пределы карты действий" + '\n' + retry
         except:
             print "Упс.Кажется Вы ввели некоректные данные." + '\n' + retry
 
-
-def show_way(way):
-    """Демонстрация пути следования"""
-    print "Нам потребовалось " + str(
-        len(way[0]) - 1) + " ходов,чтобы добраться до выхода" + '\n' + \
-          'Ниже перчислены наши шаги от точки входа до выхода' + '\n'
-    for element in xrange(len(way[0])):
-        stdout.write(
-            "%3s" % str(way[1][element]) + ' | ' + str(way[0][element]))
-        print ' '
-
-
+#Обработка и трансформация
 def block_set(field, N, M):
     """Примитивнийший механизм генерации даже не лабиринта...
        блоков что создадут подобие лабиринта"""
     i = 0
-    # Число блоков не слишком большое иначе непроходимость возрастает.
-    b = N * M / 4
-    while i <= b:
-        x = randint(1, N - 2)
-        y = randint(1, M - 2)
-        i += 1
-        field[x, y] = -1
-
-
-def show_labirinth(N, M, field):
-    """Отрисуем лабиринт и покажем его пользователю
-       смешано с индексами для лучшей визуализации"""
-    # Выведем строку для координат
-    i = 0
-    for element in xrange(M):
-        stdout.write("%1s" % str(element)[-1])
-    print ' '
-    y = 0
-    while y < N:
-        x = 0
-        while x < M:
-            stdout.write("%1s" % str(transform_out(x, y, field))[-1])
-            x = x + 1
-        stdout.write(str(i)[-1])
-        i = i + 1
-        print ' '
-        y = y + 1
-    for element in xrange(M):
-        stdout.write("%1s" % str(element)[-1])
-    print ' '
-
+    X = N-2
+    Y = M-2
+    b = X * Y / 4  # Число блоков не слишком большое иначе непроходимость возрастает.
+    while i < b:
+        x = randint(1, X)
+        y = randint(1, Y)
+        if field[x, y] != -1:
+            field[x, y] = -1
+            i += 1
 
 def transform_out(y, x, field):
     """Трансформация в понятный для пользвателя вид."""
@@ -178,7 +127,6 @@ def transform_out(y, x, field):
     elif field[x][y] == 3:
         return 'F'
 
-
 def wall_horizontal(field, row):
     """Добавим горизонатльные стенки для лабиринта"""
     i = 0
@@ -186,29 +134,12 @@ def wall_horizontal(field, row):
         field[row, i] = -1
         i += 1
 
-
 def wall_vertical(field, column, N):
     """Вертикальные стенки"""
     i = 0
     while i < N:
         field[i, column] = -1
         i += 1
-
-
-def transfom_user_data(field, x, y):
-    """Трансформируем полученый лабиринт.Нам он отдаст лабиринт с 1.
-       Мы же,обработаем и превратим в -1.Небольшая хитрость чтобы отрисовать
-       понятный и читабельный путь впоследствии."""
-    i = 0
-    while i < y:
-        j = 0
-        while j < x:
-            if field[i][j] == 1:
-                field[i][j] = -1
-            j = j + 1
-        i = i + 1
-    return field
-
 
 def final_check(field, F):
     """если значение по координатам конца пути изменилось
@@ -219,3 +150,36 @@ def final_check(field, F):
     else:
         print "Между двумя указаными точками-нет пути"
         return False
+
+#Демонстрация
+def show_way(way):
+    """Демонстрация пути следования"""
+    print "Нам потребовалось " + str(
+        len(way[0]) - 1) + " ходов,чтобы добраться до выхода" + '\n' + \
+          'Ниже перчислены наши шаги от точки входа до выхода' + '\n'
+    for element in xrange(len(way[0])):
+        stdout.write(
+            "%3s" % str(way[1][element]) + ' | ' + str(way[0][element]))
+        print ' '
+
+def show_labirinth(N, M, field):
+    """Отрисуем лабиринт и покажем его пользователю
+       смешано с индексами для лучшей визуализации"""
+    # Выведем строку для координат
+    i = 0
+    for element in xrange(M):
+        stdout.write("%1s" % str(element)[-1])
+    print ' '
+    y = 0
+    while y < N:
+        x = 0
+        while x < M:
+            stdout.write("%1s" % str(transform_out(x, y, field))[-1])
+            x += 1
+        stdout.write(str(i)[-1])
+        i += 1
+        print ' '
+        y += 1
+    for element in xrange(M):
+        stdout.write("%1s" % str(element)[-1])
+    print ' '
