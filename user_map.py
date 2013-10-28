@@ -76,7 +76,7 @@ def read_out_file(height, width):
         x = promt('search')
         if x == 2:  # Вилка на выбор варианта алгоритмы
             from BFS import BFS
-            Bway,Bfield = BFS(field, S, F)
+            Bway, Bfield = BFS(field, S, F)
             check = final_check(Bfield, F)
             if check:
                 show_way(Bway)
@@ -93,8 +93,9 @@ def read_out_file(height, width):
     except IOError:
         print "Проблемы с доступом к файлу.Проверьте наличие файла согласно инструкции или создайте его если такового не имеется" +   '\n'
     except IndexError:
-        print "возможно вы не указали точку начала или окончания пути"
-
+        print "Возможно вы не указали точку начала или окончания пути"
+    except:
+        print "Кажется что то пошло не так.Проверьте входные данные и попробуйте снова.Если ошибка будет повторяться-обратитесь к разработчику"
 
 def convert_type_maze(field, N, M):
     """Получим лабиринт из вложеных списков.
@@ -143,7 +144,7 @@ def building_field(total_elements_in_string, input_value):
 
 # Проверки
 def file_check(all_file):
-    # проверка наличия постороних цифр
+    """проверка наличия постороних цифр"""
     all_numbers_in_files = findall('(-*\d+)', all_file)
     for x in all_numbers_in_files:
         if x != '0' and x != '1' and x != '2' and x != '3':

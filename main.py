@@ -17,7 +17,7 @@ if value == 1:
     M = x + 2   # строим чуток другой на 2 клеточки больше в ширину и в высоту,
     N = y + 2   # потом мы эти излишки сыграют роль стен лабиринта
     field = zeros((N, M), dtype=int)   # Игровое поле
-    #  Cтенки
+    # Cтенки
     wall_horizontal(field, 0)   # Верхняя+Нижняя
     wall_horizontal(field, N - 1)
     wall_vertical(field, 0, N)   # Левая+Правая
